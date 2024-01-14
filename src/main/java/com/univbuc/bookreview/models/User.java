@@ -21,6 +21,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
     // Default constructor
     public User() {
     }
@@ -49,6 +53,8 @@ public class User {
         return password;
     }
 
+    public Role getRole() { return role; }
+
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -65,6 +71,8 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setRole(Role role) { this.role = role; }
 
     // toString method
     @Override
