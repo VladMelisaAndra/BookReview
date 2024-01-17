@@ -9,10 +9,10 @@
 - Provide a login process for users.
 
 ### 3. Book Data Storage
-- Store book information including title, author, and description.
+- Store book information including title, author, and description etc.
 
 ### 4. Admin Book Addition
-- Enable admins to add new books.
+- Enable admins to add add, update, and delete books.
 
 ### 5. Review Submission
 - Allow users to submit reviews for books.
@@ -20,11 +20,11 @@
 ### 6. Review Display
 - Display reviews for each book.
 
-### 7. User Profile Management
-- Enable users to manage their profile.
+### 7. Book Category Management
+- Allow admins to create, update, delete book categories.
 
 ### 8. Reading History
-- Track books that users have reviewed.
+- Track books that users have read.
 
 ### 9. Book Search Functionality
 - Implement a search feature to find books.
@@ -40,11 +40,16 @@
 ### 2. User Login Endpoint
 - API endpoint for user authentication.
 
-### 3. Book Addition Endpoint (Admin)
-- API for admins to add new books.
+### 3. Book Category Endpoints (Admin)
+- APIs endpoints for admins to manage book categories, including creating, updating, and deleting categories.
 
-### 4. Book Review Endpoint
-- API for users to post reviews on books.
+### 4. Books Endpoints (Admin)
+- APIs for admins to manage books, including adding, updating, deleting books.
+- API for users to search book by id or title.
 
-### 5. List Books Endpoint
-- API to list all books available in the system.
+### 5. Book Review Endpoints
+- APIs for users to post, update, delete reviews on books. API for getting all the reviews of a book.
+
+### 6. Read Books by User Endpoints
+- APIs to mark a book as read by user, to list all books read by user, and to mark a book as unread by user.
+
