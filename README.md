@@ -40,16 +40,16 @@
 ### 2. User Login Endpoint
 - API endpoint for user authentication.
 
-### 3. Book Category Endpoint (Admin)
+### 3. Book Category Endpoints (Admin)
 - APIs endpoints for admins to manage book categories, including creating, updating, and deleting categories.
 
-### 4. Book Addition Endpoint (Admin)
+### 4. Books Endpoints (Admin)
 - APIs for admins to manage books, including adding, updating, deleting books.
 - API for users to search book by id or title.
 
-### 5. Book Review Endpoint
+### 5. Book Review Endpoints
 - APIs for users to post, update, delete reviews on books. API for getting all the reviews of a book.
 
-### 6. List Books Endpoint
+### 6. Read Books by User Endpoints
 - APIs to mark a book as read by user, to list all books read by user, and to mark a book as unread by user.
 
