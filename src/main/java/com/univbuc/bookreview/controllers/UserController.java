@@ -2,6 +2,7 @@ package com.univbuc.bookreview.controllers;
 
 import com.univbuc.bookreview.dto.AuthResponse;
 import com.univbuc.bookreview.dto.UserLoginDto;
+import com.univbuc.bookreview.utilities.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         User user = new User(registrationDto.getUsername(), registrationDto.getEmail(), registrationDto.getPassword());
@@ -31,6 +35,26 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<String> getUserStatus(@RequestHeader("Authorization") String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token provided");
+        }
+
+        token = token.startsWith("Bearer ") ? token.substring(7) : token;
+
+        boolean isLoggedIn = jwtUtil.isLoggedIn(token);
+
+        if (!isLoggedIn) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+
+        boolean isAdmin = jwtUtil.isAdmin(token);
+
+        String status = "Logged In: " + isLoggedIn + ", Is Admin: " + isAdmin;
+        return ResponseEntity.ok(status);
     }
 }
 
