@@ -20,10 +20,11 @@ public class JwtUtil {
 
     private Algorithm algorithm = Algorithm.HMAC256("12345");
 
-    public String generateToken(String email) {
+    public String generateToken(String email, Long userId) {
         long expirationTime = 3600000; // 1 hour in milliseconds
         return JWT.create()
                 .withSubject(email)
+                .withClaim("userId", userId)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
                 .sign(algorithm);
@@ -59,4 +60,21 @@ public class JwtUtil {
         }
         return false;
     }
+
+    public Long extractUserId(String token) {
+        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+        Long userId = jwt.getClaim("userId").asLong();
+        return userId != null ? userId : null;
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(token); // throw an exception if the token is invalid or expired
+            return true; // The token is valid
+        } catch (JWTVerificationException e) {
+            return false; // The token is invalid or expired
+        }
+    }
+
 }
