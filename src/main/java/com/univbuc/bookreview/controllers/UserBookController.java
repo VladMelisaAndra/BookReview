@@ -4,6 +4,7 @@ import com.univbuc.bookreview.dto.UserBookDto;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.services.UserBookService;
 import com.univbuc.bookreview.utilities.JwtUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user-books")
+@SecurityRequirement(name = "Bearer")
 public class UserBookController {
     @Autowired
     private JwtUtil jwtUtil;

@@ -4,6 +4,7 @@ import com.univbuc.bookreview.dto.ReviewDto;
 import com.univbuc.bookreview.models.Review;
 import com.univbuc.bookreview.services.ReviewService;
 import com.univbuc.bookreview.utilities.JwtUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
+@SecurityRequirement(name = "Bearer")
 public class ReviewController {
 
     @Autowired

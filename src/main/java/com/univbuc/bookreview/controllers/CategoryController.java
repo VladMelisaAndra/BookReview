@@ -3,6 +3,7 @@ package com.univbuc.bookreview.controllers;
 import com.univbuc.bookreview.models.Category;
 import com.univbuc.bookreview.services.CategoryService;
 import com.univbuc.bookreview.utilities.JwtUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@SecurityRequirement(name = "Bearer")
 public class CategoryController {
 
     @Autowired

@@ -20,6 +20,13 @@ public class JwtUtil {
 
     private Algorithm algorithm = Algorithm.HMAC256("12345");
 
+    private String stripBearerToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return null;
+    }
+
     public String generateToken(String email, Long userId) {
         long expirationTime = 3600000; // 1 hour in milliseconds
         return JWT.create()
@@ -32,6 +39,7 @@ public class JwtUtil {
 
     // Method to validate and parse the JWT token
     public String validateTokenAndGetEmail(String token) {
+        token = stripBearerToken(token);
         return JWT.require(algorithm)
                 .build()
                 .verify(token)
@@ -39,6 +47,7 @@ public class JwtUtil {
     }
 
     public boolean isLoggedIn(String token) {
+        token = stripBearerToken(token);
         try {
             JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT jwt = verifier.verify(token); // Verifies the token's signature and expiration
@@ -51,6 +60,8 @@ public class JwtUtil {
     }
 
     public boolean isAdmin(String token) {
+        token = stripBearerToken(token);
+
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         String email = jwt.getSubject();
 
@@ -62,12 +73,16 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String token) {
+        token = stripBearerToken(token);
+
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         Long userId = jwt.getClaim("userId").asLong();
         return userId != null ? userId : null;
     }
 
     public boolean isTokenValid(String token) {
+        token = stripBearerToken(token);
+
         try {
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token); // throw an exception if the token is invalid or expired
