@@ -89,7 +89,7 @@ class ReviewControllerTest {
     void testGetReviewById() {
         when(reviewService.getReviewsByBookId(1L)).thenReturn(Arrays.asList(new Review()));
 
-        ResponseEntity<?> response = reviewController.getReviewsById(1L);
+        ResponseEntity<?> response = reviewController.getReviewsByBookId(1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }

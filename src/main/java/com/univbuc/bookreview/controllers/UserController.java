@@ -2,6 +2,7 @@ package com.univbuc.bookreview.controllers;
 
 import com.univbuc.bookreview.dto.AuthResponse;
 import com.univbuc.bookreview.dto.UserLoginDto;
+import com.univbuc.bookreview.dto.UserRegistrationResponseDto;
 import com.univbuc.bookreview.utilities.JwtUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,16 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserRegistrationDto registrationDto) {
+    public ResponseEntity<UserRegistrationResponseDto> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         User user = new User(registrationDto.getUsername(), registrationDto.getEmail(), registrationDto.getPassword());
-        return ResponseEntity.ok(userService.registerUser(user));
+        User registeredUser = userService.registerUser(user);
+
+        UserRegistrationResponseDto responseDto = new UserRegistrationResponseDto(
+                registeredUser.getUsername(),
+                registeredUser.getEmail()
+        );
+
+        return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping("/login")
@@ -44,8 +52,6 @@ public class UserController {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token provided");
         }
-
-        token = token.startsWith("Bearer ") ? token.substring(7) : token;
 
         boolean isLoggedIn = jwtUtil.isLoggedIn(token);
 

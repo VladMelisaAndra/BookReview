@@ -28,7 +28,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String email, Long userId) {
-        long expirationTime = 3600000; // 1 hour in milliseconds
+        long expirationTime = 360000000;
         return JWT.create()
                 .withSubject(email)
                 .withClaim("userId", userId)

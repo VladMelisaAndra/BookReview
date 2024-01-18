@@ -1,6 +1,8 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.models.Book;
+import com.univbuc.bookreview.models.Category;
 import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.repositories.BookRepository;
@@ -46,6 +48,12 @@ public class UserBookServiceTest {
         book = new Book();
         book.setId(1L);
 
+        Category category = new Category();
+        category.setId(1L);
+        category.setCategoryName("Test");
+
+        book.setCategory(category);
+
         userBook = new UserBook();
         userBook.setUser(user);
         userBook.setBook(book);
@@ -76,11 +84,12 @@ public class UserBookServiceTest {
     void getReadBooksByUser() {
         when(userBookRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(userBook));
 
-        List<UserBook> readBooks = userBookService.getReadBooksByUser(1L);
+        List<BookDto> readBooks = userBookService.getReadBooksByUser(1L);
 
         assertFalse(readBooks.isEmpty());
         assertEquals(1, readBooks.size());
-        assertEquals(userBook, readBooks.get(0));
+
+        assertEquals(userBook.getBook().getTitle(), readBooks.get(0).getTitle());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.univbuc.bookreview.controllers;
 
+import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.dto.UserBookDto;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.services.UserBookService;
@@ -30,7 +31,7 @@ public class UserBookController {
 
         Long userId = jwtUtil.extractUserId(token);
         UserBook userBook = userBookService.markBookAsRead(userId, userBookDto.getBookId());
-        return ResponseEntity.ok(userBook);
+        return ResponseEntity.ok("Book added in read list");
     }
 
     // Get read books for the logged-in user
@@ -41,7 +42,7 @@ public class UserBookController {
         }
 
         Long userId = jwtUtil.extractUserId(token);
-        List<UserBook> readBooks = userBookService.getReadBooksByUser(userId);
+        List<BookDto> readBooks = userBookService.getReadBooksByUser(userId);
         return ResponseEntity.ok(readBooks);
     }
 

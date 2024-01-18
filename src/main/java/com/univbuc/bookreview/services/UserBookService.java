@@ -1,6 +1,8 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.models.Book;
+import com.univbuc.bookreview.models.Category;
 import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.repositories.BookRepository;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserBookService {
@@ -38,8 +41,21 @@ public class UserBookService {
     }
 
     // Get read books by a specific user
-    public List<UserBook> getReadBooksByUser(Long userId) {
-        return userBookRepository.findByUserId(userId);
+    public List<BookDto> getReadBooksByUser(Long userId) {
+        List<UserBook> userBooks = userBookRepository.findByUserId(userId);
+        return userBooks.stream()
+                .map(userBook -> mapToBookResponseDto(userBook.getBook()))
+                .collect(Collectors.toList());
+    }
+
+    private BookDto mapToBookResponseDto(Book book) {
+        BookDto dto = new BookDto();
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setReleaseDate(book.getReleaseDate());
+        dto.setCategoryId(book.getCategory().getId());
+        dto.setDescription(book.getDescription());
+        return dto;
     }
 
     // Delete a specific book from a user's read list

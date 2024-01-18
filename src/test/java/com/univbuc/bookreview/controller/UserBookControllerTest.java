@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.univbuc.bookreview.controllers.UserBookController;
 import com.univbuc.bookreview.dto.UserBookDto;
 import com.univbuc.bookreview.models.UserBook;
+import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.services.UserBookService;
 import com.univbuc.bookreview.utilities.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,11 +75,11 @@ class UserBookControllerTest {
     void testGetReadBooksSuccess() {
         when(jwtUtil.isTokenValid(token)).thenReturn(true);
         when(jwtUtil.extractUserId(token)).thenReturn(1L);
-        when(userBookService.getReadBooksByUser(anyLong())).thenReturn(Arrays.asList(new UserBook(), new UserBook()));
+        when(userBookService.getReadBooksByUser(anyLong())).thenReturn(Arrays.asList(new BookDto(), new BookDto()));
 
         ResponseEntity<?> response = userBookController.getReadBooks(token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<UserBook> books = (List<UserBook>) response.getBody();
+        List<BookDto> books = (List<BookDto>) response.getBody();
         assertEquals(2, books.size());
     }
 

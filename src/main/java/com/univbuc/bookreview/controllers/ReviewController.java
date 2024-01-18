@@ -32,10 +32,11 @@ public class ReviewController {
 
         Long userId = jwtUtil.extractUserId(token);
         reviewDto.setUserId(userId);
+        reviewDto.setDate(new Date());
 
 
         Review review = reviewService.addReview(reviewDto);
-        return new ResponseEntity<>(review, HttpStatus.CREATED);
+        return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/book/{bookId}")
@@ -46,8 +47,8 @@ public class ReviewController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getReviewsById(@PathVariable Long id) {
-        List<Review> reviews = reviewService.getReviewsByBookId(id);
-        return ResponseEntity.ok(reviews);
+        Review review = reviewService.getReviewById(id);
+        return ResponseEntity.ok(review);
     }
 
     @PutMapping("/{id}")
