@@ -54,6 +54,7 @@
 - APIs to mark a book as read by user, to list all books read by user, and to mark a book as unread by user.
 
 ## Swagger
-![Screenshot 2024-01-18 at 01-07-38 Swagger UI](https://github.com/VladMelisaAndra/BookReview/assets/79593335/95a01f38-faf8-4491-9dac-4b270a5cfc56)
+![Screenshot 2024-01-18 at 15-53-36 Swagger UI](https://github.com/VladMelisaAndra/BookReview/assets/79593335/bf8dc649-7d5f-4515-89a9-1b2397cf3590)
+
 
 
