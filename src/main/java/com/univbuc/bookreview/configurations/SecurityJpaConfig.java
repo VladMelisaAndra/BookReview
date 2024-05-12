@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Configuration
 public class SecurityJpaConfig {
@@ -28,6 +30,8 @@ public class SecurityJpaConfig {
                 .authorizeRequests(auth -> auth
                         .requestMatchers("/books/view", "/books/add", "/categories").hasRole("ADMIN")
                         .requestMatchers("/books/*", "/webjars/**", "/login", "/resources/**", "/register").permitAll()
+                        .requestMatchers("/login", "/register").anonymous()
+                        .requestMatchers("/logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
@@ -46,8 +50,10 @@ public class SecurityJpaConfig {
                         .permitAll()
                 )
 
-                .exceptionHandling(ex -> ex.accessDeniedPage("/access_denied"))
+                .exceptionHandling(ex -> ex.accessDeniedPage("/not-authorized"))
                 .build();
     }
+
+
 
 }
