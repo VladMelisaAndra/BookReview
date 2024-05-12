@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Profile("mysql")
 public class JpaUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;

@@ -8,10 +8,12 @@ import com.univbuc.bookreview.services.CategoryService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class BookViewControllerIntegrationTest {
 
     @Autowired
@@ -54,12 +57,16 @@ public class BookViewControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testAddBook() throws Exception {
+        Category category = new Category();
+        category.setCategoryName("Sample Category");
+        category = categoryService.addCategory(category);
+
         mockMvc.perform(post("/books/add")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", "Sample Book")
                         .param("author", "Author Test")
                         .param("releaseDate", "2021-01-01")
-                        .param("categoryId", "1")
+                        .param("categoryId", category.getId().toString())
                         .param("description", "Test Description")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
