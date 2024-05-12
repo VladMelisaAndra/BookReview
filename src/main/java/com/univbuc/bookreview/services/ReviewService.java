@@ -1,13 +1,12 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.domain.security.User;
 import com.univbuc.bookreview.dto.ReviewDto;
 import com.univbuc.bookreview.models.Book;
-import com.univbuc.bookreview.models.Category;
 import com.univbuc.bookreview.models.Review;
-import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.repositories.BookRepository;
 import com.univbuc.bookreview.repositories.ReviewRepository;
-import com.univbuc.bookreview.repositories.UserRepository;
+import com.univbuc.bookreview.repositories.security.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

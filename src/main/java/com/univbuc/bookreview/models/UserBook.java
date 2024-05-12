@@ -1,5 +1,6 @@
 package com.univbuc.bookreview.models;
 
+import com.univbuc.bookreview.domain.security.User;
 import jakarta.persistence.*;
 
 @Entity

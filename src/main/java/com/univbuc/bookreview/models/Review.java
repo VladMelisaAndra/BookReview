@@ -1,5 +1,6 @@
 package com.univbuc.bookreview.models;
 
+import com.univbuc.bookreview.domain.security.User;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -38,5 +39,6 @@ public class Review {
     public void setComment(String comment) { this.comment = comment; }
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
+
 }
 

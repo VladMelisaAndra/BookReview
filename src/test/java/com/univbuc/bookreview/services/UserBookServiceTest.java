@@ -1,19 +1,21 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.domain.security.User;
 import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.models.Book;
 import com.univbuc.bookreview.models.Category;
-import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.repositories.BookRepository;
 import com.univbuc.bookreview.repositories.UserBookRepository;
-import com.univbuc.bookreview.repositories.UserRepository;
+import com.univbuc.bookreview.repositories.security.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class UserBookServiceTest {
 
     @Mock
@@ -61,7 +64,7 @@ public class UserBookServiceTest {
 
     @Test
     void markBookAsRead() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
@@ -74,7 +77,7 @@ public class UserBookServiceTest {
 
     @Test
     void markBookAsRead_UserOrBookNotFound() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById((int) anyLong())).thenReturn(Optional.empty());
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userBookService.markBookAsRead(1L, 1L));

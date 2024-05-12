@@ -1,18 +1,20 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.domain.security.User;
 import com.univbuc.bookreview.dto.ReviewDto;
 import com.univbuc.bookreview.models.Book;
 import com.univbuc.bookreview.models.Review;
-import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.repositories.BookRepository;
 import com.univbuc.bookreview.repositories.ReviewRepository;
-import com.univbuc.bookreview.repositories.UserRepository;
+import com.univbuc.bookreview.repositories.security.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class ReviewServiceTest {
 
     @Mock
@@ -67,7 +70,7 @@ public class ReviewServiceTest {
     @Test
     void addReview() {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
 
         Review savedReview = reviewService.addReview(reviewDto);

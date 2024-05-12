@@ -12,4 +12,6 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
 
     // Method to find a specific book in a user's read list
     Optional<UserBook> findByUserIdAndBookId(Long userId, Long bookId);
+
+    void deleteByBookId(Long id);
 }
