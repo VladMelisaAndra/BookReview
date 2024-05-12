@@ -1,13 +1,12 @@
 package com.univbuc.bookreview.services;
 
+import com.univbuc.bookreview.domain.security.User;
 import com.univbuc.bookreview.dto.BookDto;
 import com.univbuc.bookreview.models.Book;
-import com.univbuc.bookreview.models.Category;
-import com.univbuc.bookreview.models.User;
 import com.univbuc.bookreview.models.UserBook;
 import com.univbuc.bookreview.repositories.BookRepository;
 import com.univbuc.bookreview.repositories.UserBookRepository;
-import com.univbuc.bookreview.repositories.UserRepository;
+import com.univbuc.bookreview.repositories.security.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -27,7 +26,7 @@ public class UserBookService {
     private BookRepository bookRepository;
 
     public UserBook markBookAsRead(Long userId, Long bookId) {
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userRepository.findById(Math.toIntExact(userId));
         Optional<Book> book = bookRepository.findById(bookId);
 
         if(user.isPresent() && book.isPresent()) {
@@ -50,6 +49,7 @@ public class UserBookService {
 
     private BookDto mapToBookResponseDto(Book book) {
         BookDto dto = new BookDto();
+        dto.setId(book.getId());
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setReleaseDate(book.getReleaseDate());
@@ -68,4 +68,7 @@ public class UserBookService {
         return false;
     }
 
+    public boolean isBookInList(Long userId, Long bookId) {
+        return userBookRepository.findByUserIdAndBookId(userId, bookId).isPresent();
+    }
 }

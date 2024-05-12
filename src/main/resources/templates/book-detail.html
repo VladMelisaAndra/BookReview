@@ -1,0 +1,109 @@
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+
+    <script src="/webjars/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container">
+        <a class="navbar-brand" th:href="@{'/'}"><i class="fas fa-home mx-1"></i>Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/books/search'}">Search Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/user-books'}">My Books</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn-primary" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin Actions
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" th:href="@{'/books/add'}"><i class="fas fa-plus-circle"></i> Add Books</a></li>
+                        <li><a class="dropdown-item" th:href="@{'/books/view'}"><i class="fas fa-book"></i> Manage Books</a></li>
+                        <li><a class="dropdown-item" th:href="@{'/categories'}"><i class="fas fa-layer-group"></i> Manage Categories</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn-primary" th:href="@{'/login'}">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn-primary" th:href="@{'/register'}">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form id="logout-form" th:action="@{/perform_logout}" method="post" class="form-inline">
+                        <button type="submit" class="btn btn-primary nav-link">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+		</div>
+    </nav>
+<div class="container mt-5">
+    <h1>Book Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${book.title}"></h5>
+            <p class="card-text"><b>Author:</b> <span th:text="${book.author}"></span></p>
+            <p class="card-text"><b>Release Date:</b> <span th:text="${#dates.format(book.releaseDate, 'yyyy-MM-dd')}"></span></p>
+            <p class="card-text"><b>Category:</b> <span th:text="${categoryMap[book.categoryId]}"></span></p>
+            <p class="card-text"><b>Description:</b> <span th:text="${book.description}"></span></p>
+            <form th:action="@{/user-books/add}" method="post">
+                <input type="hidden" th:value="${book.id}" name="bookId"/>
+                <button type="submit" class="btn btn-success">Mark as Read</button>
+            </form>
+        </div>
+
+    </div>
+    <div>
+        <h2>Reviews</h2>
+        <div th:each="review : ${reviews}" class="mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text" th:text="${review.comment}">Sample review text here.</p>
+                    <p class="card-text">Rating:
+                        <span th:text="${review.stars}">5</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add Review Form -->
+    <h3>Add a Review</h3>
+    <form th:action="@{/reviews/add}" th:object="${reviewDto}" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <div class="mb-3">
+            <textarea class="form-control" name="comment" placeholder="Enter your review" required></textarea>
+        </div>
+        <div class="mb-3">
+            <input type="number" class="form-control" name="stars" min="1" max="5" placeholder="Rating (1-5)" required>
+        </div>
+
+        <input type="hidden" th:value="${book.id}" name="bookId" />
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+    <a href="/books/view" class="btn btn-primary mt-3">Back to List</a>
+</div>
+</body>
+</html>

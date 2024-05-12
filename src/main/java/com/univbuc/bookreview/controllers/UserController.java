@@ -1,68 +1,44 @@
 package com.univbuc.bookreview.controllers;
 
-import com.univbuc.bookreview.dto.AuthResponse;
-import com.univbuc.bookreview.dto.UserLoginDto;
-import com.univbuc.bookreview.dto.UserRegistrationResponseDto;
-import com.univbuc.bookreview.utilities.JwtUtil;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.univbuc.bookreview.domain.security.User;
+import com.univbuc.bookreview.repositories.security.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.univbuc.bookreview.models.User;
-import com.univbuc.bookreview.dto.UserRegistrationDto;
-import com.univbuc.bookreview.services.UserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RestController
-@RequestMapping("/api/users")
-@SecurityRequirement(name = "Bearer")
+@Controller
+@RequestMapping
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private BCryptPasswordEncoder passwordEncoder;
+    @GetMapping("/register")
+    public String showRegistrationForm() {
+        return "register";
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<UserRegistrationResponseDto> registerUser(@RequestBody UserRegistrationDto registrationDto) {
-        User user = new User(registrationDto.getUsername(), registrationDto.getEmail(), registrationDto.getPassword());
-        User registeredUser = userService.registerUser(user);
-
-        UserRegistrationResponseDto responseDto = new UserRegistrationResponseDto(
-                registeredUser.getUsername(),
-                registeredUser.getEmail()
-        );
-
-        return ResponseEntity.ok(responseDto);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDto loginDto) {
-        try {
-            String token = userService.authenticate(loginDto.getEmail(), loginDto.getPassword());
-            return ResponseEntity.ok(new AuthResponse(token));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/status")
-    public ResponseEntity<String> getUserStatus(@RequestHeader("Authorization") String token) {
-        if (token == null || token.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token provided");
+    public String registerUser(String username, String email, String password, RedirectAttributes redirectAttributes) {
+        if (userRepository.existsByUsername(username)) {
+            redirectAttributes.addFlashAttribute("error", "Username already exists!");
+            return "redirect:/register";
         }
 
-        boolean isLoggedIn = jwtUtil.isLoggedIn(token);
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(passwordEncoder.encode(password));
+        userRepository.save(newUser);
 
-        if (!isLoggedIn) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
-        }
-
-        boolean isAdmin = jwtUtil.isAdmin(token);
-
-        String status = "Logged In: " + isLoggedIn + ", Is Admin: " + isAdmin;
-        return ResponseEntity.ok(status);
+        redirectAttributes.addFlashAttribute("success", "Registration successful!");
+        return "redirect:/login";
     }
+
+
 }
-

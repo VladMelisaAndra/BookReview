@@ -1,0 +1,120 @@
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+
+    <script src="/webjars/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container">
+        <a class="navbar-brand" th:href="@{'/'}"><i class="fas fa-home mx-1"></i>Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/books/search'}">Search Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/user-books'}">My Books</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn-primary" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin Actions
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" th:href="@{'/books/add'}"><i class="fas fa-plus-circle"></i> Add Books</a></li>
+                        <li><a class="dropdown-item" th:href="@{'/books/view'}"><i class="fas fa-book"></i> Manage Books</a></li>
+                        <li><a class="dropdown-item" th:href="@{'/categories'}"><i class="fas fa-layer-group"></i> Manage Categories</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn-primary" th:href="@{'/login'}">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn-primary" th:href="@{'/register'}">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form id="logout-form" th:action="@{/perform_logout}" method="post" class="form-inline">
+                        <button type="submit" class="btn btn-primary nav-link">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+		</div>
+    </nav>
+<div class="container mt-5">
+    <h1>All Books</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${bookPage.content}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.category.categoryName}"></td>
+            <td>
+                <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-primary btn-sm">Edit</a>
+                <a th:href="@{/books/delete/{id}(id=${book.id})}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:if="${bookPage.totalPages > 0}" aria-label="Page navigation example">
+        <ul  class="pagination">
+
+            <li class="page-item">
+                <a th:if="${bookPage.number > 0}"
+                   th:href="@{/books/view(size=${bookPage.size}, page=${bookPage.number})}"
+                   class="page-link" >
+                    Previous
+                </a></li>
+            <li th:each="pageNumber : ${#numbers.sequence(1,T(java.lang.Math).min(7,bookPage.totalPages))}"
+                th:class="${pageNumber==bookPage.number + 1} ? 'page-item active':   'page-item'">
+                <a class="page-link"
+                   th:text="${pageNumber}"
+                   th:href="@{/books/view(size=${bookPage.size}, page=${pageNumber})}">
+                    1
+                </a></li>
+            <li
+                    th:class="${bookPage.number>6} ? 'page-item active':  'page-item'"
+                    th:if="${bookPage.totalPages > 6}"><a class="page-link" href="#">...</a></li>
+
+            <li th:if="${bookPage.number < bookPage.totalPages}" class="page-item">
+                <a th:if="${bookPage.number < bookPage.totalPages}"
+                   th:href="@{/books/view(size=${bookPage.size}, page=${bookPage.number+2})}"
+                   class="page-link" >
+                    Next
+                </a>
+            </li>
+        </ul>
+
+    </nav>
+    <a th:href="@{/books/view(page=${bookPage.number+1}, size=${bookPage.size}, sortDir='asc')}">Sort Ascending</a>
+    <a th:href="@{/books/view(page=${bookPage.number+1}, size=${bookPage.size}, sortDir='desc')}">Sort Descending</a>
+
+</div>
+</body>
+</html>

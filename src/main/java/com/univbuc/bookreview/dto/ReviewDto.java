@@ -12,7 +12,7 @@ public class ReviewDto {
     // Getters and Setters
     public Long getBookId() { return bookId; }
     public void setBookId(Long bookId) { this.bookId = bookId; }
-    public Long getUserId() { return userId; }
+    public Integer getUserId() { return Math.toIntExact(userId); }
     public void setUserId(Long userId) { this.userId = userId; }
     public int getStars() { return stars; }
     public void setStars(int stars) { this.stars = stars; }

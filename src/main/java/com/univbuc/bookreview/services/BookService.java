@@ -5,10 +5,15 @@ import com.univbuc.bookreview.models.Book;
 import com.univbuc.bookreview.models.Category;
 import com.univbuc.bookreview.repositories.BookRepository;
 import com.univbuc.bookreview.repositories.CategoryRepository;
+import com.univbuc.bookreview.repositories.ReviewRepository;
+import com.univbuc.bookreview.repositories.UserBookRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class BookService {
@@ -18,6 +23,12 @@ public class BookService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserBookRepository userBookRepository;
 
     public Book addBook(BookDto bookDto) {
         Book book = new Book();
@@ -61,11 +72,25 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    @Transactional
     public boolean deleteBook(Long id) {
         if (bookRepository.existsById(id)) {
+            reviewRepository.deleteByBookId(id);
+            userBookRepository.deleteByBookId(id);
             bookRepository.deleteById(id);
+
             return true;
         }
         return false;
+    }
+
+    //get all categories
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
+
+    public Page<Book> findPaginated(Pageable pageable) {
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        return bookPage;
     }
 }
