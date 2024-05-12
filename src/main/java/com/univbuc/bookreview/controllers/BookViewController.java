@@ -10,6 +10,7 @@ import com.univbuc.bookreview.services.CategoryService;
 import com.univbuc.bookreview.services.ReviewService;
 import com.univbuc.bookreview.utilities.SecurityUtils;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -84,11 +86,25 @@ public class BookViewController {
 
     // Process the submission of add book form
     @PostMapping("/add")
-    public String addBook(@ModelAttribute("bookDto") BookDto bookDto, RedirectAttributes redirectAttributes) {
-        Book book = bookService.addBook(bookDto);
+    public String addBook(@Valid @ModelAttribute("bookDto") BookDto bookDto,
+                          BindingResult bindingResult,
+                          RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder("Please correct the following errors: ");
+            bindingResult.getAllErrors().forEach(error -> {
+                errorMsg.append(error.getDefaultMessage()).append(" ");
+            });
+
+            redirectAttributes.addFlashAttribute("error", errorMsg.toString());
+            redirectAttributes.addFlashAttribute("bookDto", bookDto);  // Optionally retain input data
+            return "redirect:/books/add";
+        }
+
+        bookService.addBook(bookDto);
         redirectAttributes.addFlashAttribute("message", "Book added successfully!");
         return "redirect:/books/view";
     }
+
 
     @GetMapping("/search")
     public String searchBooks(@RequestParam(required = false) String title, Model model) {
@@ -106,9 +122,10 @@ public class BookViewController {
 
     // Display form to edit a book
     @GetMapping("/edit/{id}")
-    public String editBookForm(@PathVariable Long id, Model model) {
+    public String editBookForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Book book = bookService.getBookById(id);
         if (book == null) {
+            redirectAttributes.addFlashAttribute("error", "The requested book was not found.");
             return "redirect:/books/view";  // Redirect if book not found
         }
         BookDto bookDto = new BookDto();
@@ -126,19 +143,30 @@ public class BookViewController {
 
 
     @PostMapping("/update/{id}")
-    public String updateBook(@PathVariable Long id, @ModelAttribute("bookDto") BookDto bookDto, RedirectAttributes redirectAttributes) {
+    public String updateBook(@PathVariable Long id, @Valid @ModelAttribute("bookDto") BookDto bookDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> errorMsg.append(error.getDefaultMessage()).append(" "));
+            redirectAttributes.addFlashAttribute("error", errorMsg.toString());
+            redirectAttributes.addFlashAttribute("bookDto", bookDto);
+            return "redirect:/books/edit/" + id;
+        }
+
         if (id == null) {
             redirectAttributes.addFlashAttribute("error", "Invalid book ID.");
-            return "redirect:/books/edit/{id}";
+            return "redirect:/books/view";
         }
+
         Book updatedBook = bookService.updateBook(id, bookDto);
         if (updatedBook == null) {
-            redirectAttributes.addFlashAttribute("error", "Error updating book.");
-            return "redirect:/books/edit/{id}";
+            redirectAttributes.addFlashAttribute("error", "Error updating book. It may no longer exist.");
+            return "redirect:/books/edit/" + id;
         }
+
         redirectAttributes.addFlashAttribute("message", "Book updated successfully!");
         return "redirect:/books/view";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteBook(@PathVariable Long id, RedirectAttributes redirectAttributes) {

@@ -25,9 +25,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(String username, String email, String password, RedirectAttributes redirectAttributes) {
+    public String registerUser(String username, String password, RedirectAttributes redirectAttributes) {
         if (userRepository.existsByUsername(username)) {
             redirectAttributes.addFlashAttribute("error", "Username already exists!");
+            return "redirect:/register";
+        }
+        if (!username.matches("^[a-zA-Z0-9_]{4,20}$")) {
+            redirectAttributes.addFlashAttribute("error", "Invalid username!");
+            return "redirect:/register";
+        }
+        if (!password.matches("^.{6,30}$")) {
+            redirectAttributes.addFlashAttribute("error", "Password must be 6-30 characters long!");
             return "redirect:/register";
         }
 

@@ -31,6 +31,14 @@ public class CategoryViewController {
     // Add a new category
     @PostMapping("/add")
     public String addCategory(@ModelAttribute Category category, RedirectAttributes redirectAttributes) {
+        if (category.getCategoryName().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Category name cannot be empty!");
+            return "redirect:/categories";
+        }
+        if (categoryService.categoryExists(category.getCategoryName())) {
+            redirectAttributes.addFlashAttribute("error", "Category already exists!");
+            return "redirect:/categories";
+        }
         categoryService.addCategory(category);
         redirectAttributes.addFlashAttribute("message", "Category added successfully!");
         return "redirect:/categories";
@@ -39,6 +47,14 @@ public class CategoryViewController {
     // Update an existing category
     @PostMapping("/update/{id}")
     public String updateCategory(@PathVariable Long id, @RequestParam String name, RedirectAttributes redirectAttributes) {
+        if (name.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Category name cannot be empty!");
+            return "redirect:/categories";
+        }
+        if (categoryService.categoryExists(name)) {
+            redirectAttributes.addFlashAttribute("error", "Category already exists!");
+            return "redirect:/categories";
+        }
         Category category = new Category();
         category.setId(id);
         category.setCategoryName(name);
